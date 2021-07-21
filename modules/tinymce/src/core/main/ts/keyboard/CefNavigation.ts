@@ -121,6 +121,8 @@ const moveToEndPoint = (editor: Editor, forward: boolean): boolean => {
   });
 };
 
+// TODO: <Jira> IE11 does not natively allow a selction when the cursor starts as a fake caret.
+// All other browsers have no problems with this
 const selectToEndPoint = (editor: Editor, forward: boolean): boolean => {
   // console.log('selectToEndPoint');
   const traverse = forward ? Traverse.lastChild : Traverse.firstChild;
