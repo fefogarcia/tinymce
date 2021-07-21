@@ -23,6 +23,10 @@ const executeKeydownOverride = (editor: Editor, caret: Cell<Text>, evt: Keyboard
   MatchKeys.execute([
     { keyCode: VK.RIGHT, action: MatchKeys.action(CefNavigation.moveH, editor, true) },
     { keyCode: VK.LEFT, action: MatchKeys.action(CefNavigation.moveH, editor, false) },
+    // To select from current cursor location to start/end of content
+    // Mac: Shift+Home/End (covered in HomeEndKeys.ts) or Shift+Cmd+Up/Down (covered here)
+    { keyCode: VK.UP, shiftKey: true, metaKey: true, action: MatchKeys.action(CefNavigation.selectToEndPoint, editor, false) },
+    { keyCode: VK.DOWN, shiftKey: true, metaKey: true, action: MatchKeys.action(CefNavigation.selectToEndPoint, editor, true) },
     { keyCode: VK.UP, action: MatchKeys.action(CefNavigation.moveV, editor, false) },
     { keyCode: VK.DOWN, action: MatchKeys.action(CefNavigation.moveV, editor, true) },
     { keyCode: VK.RIGHT, action: MatchKeys.action(TableNavigation.moveH, editor, true) },

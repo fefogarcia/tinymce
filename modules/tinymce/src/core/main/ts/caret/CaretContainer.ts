@@ -19,10 +19,9 @@ import { CaretPosition } from './CaretPosition';
 
 const isElement = NodeType.isElement;
 const isText = NodeType.isText;
-const isBr = NodeType.isBr;
 
 const isCaretContainerBlock = (node: Node | null): node is Element => {
-  if (isText(node) || isBr(node)) {
+  if (isText(node)) {
     node = node.parentNode;
   }
 
@@ -177,7 +176,6 @@ const showCaretContainerBlock = (caretContainer: Element): Element | null => {
   return null;
 };
 
-// TODO: Maybe this condier the start offset as well
 const isRangeInCaretContainerBlock = (range: Range): boolean => isCaretContainerBlock(range.startContainer);
 
 export {

@@ -27,6 +27,7 @@ describe('webdriver.tinymce.core.keyboard.HomeEndKeysTest', () => {
   context('Home', () => {
     const pHome = pKeystroke('Home');
 
+    // Sanity check to make sure nothing overrides the native behaviour
     it('move to start of line of normal paragraph', async () => {
       const editor = hook.editor();
       editor.setContent('<p>abc</p><p>def</p>');
@@ -36,6 +37,7 @@ describe('webdriver.tinymce.core.keyboard.HomeEndKeysTest', () => {
     });
 
     context('Ctrl', () => {
+      // Sanity check to make sure nothing overrides the native behaviour
       it('move to start of content with normal paragraphs', async () => {
         const editor = hook.editor();
         editor.setContent('<p>abc</p><p>def</p>');
@@ -46,6 +48,7 @@ describe('webdriver.tinymce.core.keyboard.HomeEndKeysTest', () => {
     });
 
     context('Shift', () => {
+      // Sanity check to make sure nothing overrides the native behaviour
       it('select to start of normal paragraph', async () => {
         const editor = hook.editor();
         editor.setContent('<p>abc</p><p>def</p>');
@@ -56,6 +59,7 @@ describe('webdriver.tinymce.core.keyboard.HomeEndKeysTest', () => {
     });
 
     context('Ctrl+Shift', () => {
+      // Sanity check to make sure nothing overrides the native behaviour
       it('select to start of content with normal paragraphs', async () => {
         const editor = hook.editor();
         editor.setContent('<p>abc</p><p>def</p>');
@@ -64,6 +68,7 @@ describe('webdriver.tinymce.core.keyboard.HomeEndKeysTest', () => {
         TinyAssertions.assertSelection(editor, [ 0, 0 ], 0, [ 1, 0 ], 3);
       });
 
+      // Sanity check to make sure nothing overrides the native behaviour
       // TODO: <Jira> Does not work natively on IE11 but does on all other browsers
       it('TINY-7460: select to start of CEF span block', async function () {
         if (platform.browser.isIE()) {
@@ -92,6 +97,7 @@ describe('webdriver.tinymce.core.keyboard.HomeEndKeysTest', () => {
         }
       });
 
+      // Sanity check to make sure nothing overrides the native behaviour
       // TODO: <Jira> Does not work natively on IE11 but does on all other browsers
       it('TINY-7460: select from end of CEF block to start of content', async function () {
         if (platform.browser.isIE()) {
@@ -109,6 +115,7 @@ describe('webdriver.tinymce.core.keyboard.HomeEndKeysTest', () => {
   context('End', () => {
     const pEnd = pKeystroke('End');
 
+    // Sanity check to make sure nothing overrides the native behaviour
     it('move to end of line of normal paragraph', async () => {
       const editor = hook.editor();
       editor.setContent('<p>abc</p><p>def</p>');
@@ -118,6 +125,7 @@ describe('webdriver.tinymce.core.keyboard.HomeEndKeysTest', () => {
     });
 
     context('Ctrl', () => {
+      // Sanity check to make sure nothing overrides the native behaviour
       it('move to end of content with normal paragraphs', async () => {
         const editor = hook.editor();
         editor.setContent('<p>abc</p><p>def</p>');
@@ -128,6 +136,7 @@ describe('webdriver.tinymce.core.keyboard.HomeEndKeysTest', () => {
     });
 
     context('Shift', () => {
+      // Sanity check to make sure nothing overrides the native behaviour
       it('select to end of normal paragraph', async () => {
         const editor = hook.editor();
         editor.setContent('<p>abc</p><p>def</p>');
@@ -138,6 +147,7 @@ describe('webdriver.tinymce.core.keyboard.HomeEndKeysTest', () => {
     });
 
     context('Ctrl+Shift', () => {
+      // Sanity check to make sure nothing overrides the native behaviour
       it('select to end of content with normal paragraphs', async () => {
         const editor = hook.editor();
         editor.setContent('<p>abc</p><p>def</p>');
@@ -146,6 +156,7 @@ describe('webdriver.tinymce.core.keyboard.HomeEndKeysTest', () => {
         TinyAssertions.assertSelection(editor, [ 0, 0 ], 0, [ 1, 0 ], 3);
       });
 
+      // Sanity check to make sure nothing overrides the native behaviour
       // TODO: <Jira> Does not work natively on IE11 but does on all other browsers
       it('TINY-7460: select to end of CEF span block', async function () {
         if (platform.browser.isIE()) {
@@ -170,6 +181,7 @@ describe('webdriver.tinymce.core.keyboard.HomeEndKeysTest', () => {
         TinyAssertions.assertSelection(editor, [ 0, 0 ], 0, [], 2);
       });
 
+      // Sanity check to make sure nothing overrides the native behaviour
       // TODO: <Jira> Does not work natively on IE11 but does on all other browsers
       it('TINY-7460: select from start of CEF block to end of content', async function () {
         if (platform.browser.isIE()) {

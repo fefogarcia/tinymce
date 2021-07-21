@@ -1,11 +1,13 @@
 import { Keys } from '@ephox/agar';
-import { context, describe, it } from '@ephox/bedrock-client';
+import { before, context, describe, it } from '@ephox/bedrock-client';
 import { TinyAssertions, TinyContentActions, TinyHooks, TinySelections } from '@ephox/mcagar';
+import { PlatformDetection } from '@ephox/sand';
 
 import Editor from 'tinymce/core/api/Editor';
 import Theme from 'tinymce/themes/silver/Theme';
 
 describe('browser.tinymce.core.keyboard.HomeEndKeysTest', () => {
+  const platform = PlatformDetection.detect();
   const hook = TinyHooks.bddSetupLight<Editor>({
     add_unload_trigger: false,
     base_url: '/project/tinymce/js/tinymce',
@@ -21,7 +23,7 @@ describe('browser.tinymce.core.keyboard.HomeEndKeysTest', () => {
       const editor = hook.editor();
       editor.setContent('<p>123</p><p><span contenteditable="false">CEF</span>456</p>');
       TinySelections.setCursor(editor, [ 1, 1 ], 3);
-      TinyContentActions.keystroke(editor, Keys.home());
+      homeKey(editor, false, false);
       TinyAssertions.assertCursor(editor, [ 1, 0 ], 0);
     });
 
@@ -29,7 +31,7 @@ describe('browser.tinymce.core.keyboard.HomeEndKeysTest', () => {
       const editor = hook.editor();
       editor.setContent('<p><span contenteditable="false">CEF</span></p>');
       TinySelections.setCursor(editor, [ 0 ], 1);
-      TinyContentActions.keystroke(editor, Keys.home());
+      homeKey(editor, false, false);
       TinyAssertions.assertCursor(editor, [ 0, 0 ], 0);
     });
 
@@ -37,7 +39,7 @@ describe('browser.tinymce.core.keyboard.HomeEndKeysTest', () => {
       const editor = hook.editor();
       editor.setContent('<p>123</p><p><span contenteditable="false">CEF</span>456<br>789</p>');
       TinySelections.setSelection(editor, [ 1, 1 ], 3, [ 1, 1 ], 3);
-      TinyContentActions.keystroke(editor, Keys.home());
+      homeKey(editor, false, false);
       TinyAssertions.assertCursor(editor, [ 1, 0 ], 0);
     });
 
@@ -45,7 +47,7 @@ describe('browser.tinymce.core.keyboard.HomeEndKeysTest', () => {
       const editor = hook.editor();
       editor.setContent('<p>123</p><p><span contenteditable="false">CEF</span><br>456</p>');
       TinySelections.setCursor(editor, [ 1, 2 ], 3);
-      TinyContentActions.keystroke(editor, Keys.home());
+      homeKey(editor, false, false);
       TinyAssertions.assertCursor(editor, [ 1, 2 ], 3);
     });
 
@@ -53,21 +55,35 @@ describe('browser.tinymce.core.keyboard.HomeEndKeysTest', () => {
       const editor = hook.editor();
       editor.setContent('<p>123</p>');
       TinySelections.setCursor(editor, [ 0, 0 ], 1);
-      TinyContentActions.keystroke(editor, Keys.home());
+      homeKey(editor, false, false);
       TinyAssertions.assertCursor(editor, [ 0, 0 ], 1);
     });
 
-    context('Ctrl', () => {
-      it('TINY-7460: move selection to start of the cef block', () => {
+    // Only test Shift+Home for OSX as that is the shortcut for selecting to the start of the document
+    context('Shift (OSX)', () => {
+      before(function () {
+        if (!platform.os.isOSX()) {
+          this.skip();
+        }
+      });
+
+      it('TINY-7460: make selection to start of the cef block', () => {
         const editor = hook.editor();
         editor.setContent('<p contenteditable="false">CEF</p><p>abc</p>');
         TinySelections.setCursor(editor, [ 2, 0 ], 2);
-        homeKey(editor, true, false);
-        TinyAssertions.assertCursor(editor, [ 0 ], 0);
+        homeKey(editor, false, true);
+        TinyAssertions.assertSelection(editor, [], 0, [ 1, 0 ], 2);
       });
     });
 
     context('Ctrl+Shift', () => {
+      before(function () {
+        // Skip OSX as it has differnt shortcut for selecting to the start/end of the document
+        if (platform.os.isOSX()) {
+          this.skip();
+        }
+      });
+
       it('TINY-7460: make selection to start of the cef block', () => {
         const editor = hook.editor();
         editor.setContent('<p contenteditable="false">CEF</p><p>abc</p>');
@@ -82,7 +98,7 @@ describe('browser.tinymce.core.keyboard.HomeEndKeysTest', () => {
         const editor = hook.editor();
         editor.setContent('<p><a href="google.com">link</a>test</p>');
         TinySelections.setCursor(editor, [ 0, 0, 0 ], 2);
-        TinyContentActions.keystroke(editor, Keys.home());
+        homeKey(editor, false, false);
         TinyAssertions.assertCursor(editor, [ 0, 0 ], 0);
       });
 
@@ -90,7 +106,7 @@ describe('browser.tinymce.core.keyboard.HomeEndKeysTest', () => {
         const editor = hook.editor();
         editor.setContent('<p><a href="google.com">link1</a>test</p>');
         TinySelections.setCursor(editor, [ 0, 1 ], 3);
-        TinyContentActions.keystroke(editor, Keys.home());
+        homeKey(editor, false, false);
         TinyAssertions.assertCursor(editor, [ 0, 0 ], 0);
       });
     });
@@ -103,7 +119,7 @@ describe('browser.tinymce.core.keyboard.HomeEndKeysTest', () => {
       const editor = hook.editor();
       editor.setContent('<p>123<span contenteditable="false">CEF</span></p><p>456</p>');
       TinySelections.setCursor(editor, [ 0, 0 ], 0);
-      TinyContentActions.keystroke(editor, Keys.end());
+      endKey(editor, false, false);
       TinyAssertions.assertCursor(editor, [ 0, 2 ], 1);
     });
 
@@ -111,7 +127,7 @@ describe('browser.tinymce.core.keyboard.HomeEndKeysTest', () => {
       const editor = hook.editor();
       editor.setContent('<p><span contenteditable="false">CEF</span></p>');
       TinySelections.setCursor(editor, [ 0 ], 0);
-      TinyContentActions.keystroke(editor, Keys.end());
+      endKey(editor, false, false);
       TinyAssertions.assertCursor(editor, [ 0, 1 ], 1);
     });
 
@@ -119,7 +135,7 @@ describe('browser.tinymce.core.keyboard.HomeEndKeysTest', () => {
       const editor = hook.editor();
       editor.setContent('<p>123<br>456<span contenteditable="false">CEF</span></p>');
       TinySelections.setSelection(editor, [ 0, 0 ], 0, [ 0, 2 ], 0);
-      TinyContentActions.keystroke(editor, Keys.end());
+      endKey(editor, false, false);
       TinyAssertions.assertSelection(editor, [ 0, 4 ], 1, [ 0, 4 ], 1);
     });
 
@@ -127,7 +143,7 @@ describe('browser.tinymce.core.keyboard.HomeEndKeysTest', () => {
       const editor = hook.editor();
       editor.setContent('<p>123<br><span contenteditable="false">CEF</span></p><p>456</p>');
       TinySelections.setCursor(editor, [ 0, 0 ], 0);
-      TinyContentActions.keystroke(editor, Keys.end());
+      endKey(editor, false, false);
       TinyAssertions.assertSelection(editor, [ 0, 0 ], 0, [ 0, 0 ], 0);
     });
 
@@ -135,21 +151,35 @@ describe('browser.tinymce.core.keyboard.HomeEndKeysTest', () => {
       const editor = hook.editor();
       editor.setContent('<p>123</p>');
       TinySelections.setCursor(editor, [ 0, 0 ], 1);
-      TinyContentActions.keystroke(editor, Keys.end());
+      endKey(editor, false, false);
       TinyAssertions.assertSelection(editor, [ 0, 0 ], 1, [ 0, 0 ], 1);
     });
 
-    context('Ctrl', () => {
-      it('TINY-7460: move cursor to end of the CEF block', () => {
+    // Only test Shift+End for OSX as that is the shortcut for selecting to the end of the document
+    context('Shift (OSX)', () => {
+      before(function () {
+        if (!platform.os.isOSX()) {
+          this.skip();
+        }
+      });
+
+      it('TINY-7460: make selection to end of the cef block', () => {
         const editor = hook.editor();
         editor.setContent('<p>abc</p><p contenteditable="false">CEF</p>');
-        TinySelections.setCursor(editor, [ 0, 0 ], 0);
-        endKey(editor, true, false);
-        TinyAssertions.assertCursor(editor, [ 2 ], 0);
+        TinySelections.setCursor(editor, [ 0, 0 ], 1);
+        endKey(editor, false, true);
+        TinyAssertions.assertSelection(editor, [ 0, 0 ], 1, [], 2);
       });
     });
 
     context('Ctrl+Shift', () => {
+      before(function () {
+        // Skip OSX as it has differnt shortcut for selecting to the start/end of the document
+        if (platform.os.isOSX()) {
+          this.skip();
+        }
+      });
+
       it('TINY-7460: make selection to end of the cef block', () => {
         const editor = hook.editor();
         editor.setContent('<p>abc</p><p contenteditable="false">CEF</p>');
@@ -164,7 +194,7 @@ describe('browser.tinymce.core.keyboard.HomeEndKeysTest', () => {
         const editor = hook.editor();
         editor.setContent('<p>test<a href="google.com">link</a></p>');
         TinySelections.setCursor(editor, [ 0, 1, 0 ], 0);
-        TinyContentActions.keystroke(editor, Keys.end());
+        endKey(editor, false, false);
         TinyAssertions.assertCursor(editor, [ 0, 2 ], 1);
       });
 
@@ -172,7 +202,7 @@ describe('browser.tinymce.core.keyboard.HomeEndKeysTest', () => {
         const editor = hook.editor();
         editor.setContent('<p>test<a href="google.com">link 2</a></p>');
         TinySelections.setCursor(editor, [ 0, 0 ], 0);
-        TinyContentActions.keystroke(editor, Keys.end());
+        endKey(editor, false, false);
         TinyAssertions.assertCursor(editor, [ 0, 2 ], 1);
       });
     });

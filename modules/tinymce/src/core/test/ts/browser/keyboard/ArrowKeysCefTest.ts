@@ -1,7 +1,8 @@
 import { Keys, Waiter } from '@ephox/agar';
-import { context, describe, it } from '@ephox/bedrock-client';
+import { before, context, describe, it } from '@ephox/bedrock-client';
 import { Arr } from '@ephox/katamari';
 import { TinyAssertions, TinyContentActions, TinyHooks, TinySelections } from '@ephox/mcagar';
+import { PlatformDetection } from '@ephox/sand';
 import { assert } from 'chai';
 
 import Editor from 'tinymce/core/api/Editor';
@@ -13,6 +14,7 @@ import Theme from 'tinymce/themes/silver/Theme';
 import * as KeyUtils from '../../module/test/KeyUtils';
 
 describe('browser.tinymce.core.keyboard.ArrowKeysCefTest', () => {
+  const platform = PlatformDetection.detect();
   const hook = TinyHooks.bddSetupLight<Editor>({
     height: 200,
     indent: false,
@@ -186,7 +188,7 @@ describe('browser.tinymce.core.keyboard.ArrowKeysCefTest', () => {
     assertKeydownCount(2);
   });
 
-  context('cE=false block in selection', () => {
+  context('cE=false block at start and/or end of selection', () => {
     const cefAtStart = '<p contenteditable="false">abc</p><p>def</p>';
     const cefAtEnd = '<p>abc</p><p contenteditable="false">def</p>';
     const cefAtBoth = '<p contenteditable="false">abc</p><p>def</p><p contenteditable="false">ghi</p>';
@@ -276,6 +278,36 @@ describe('browser.tinymce.core.keyboard.ArrowKeysCefTest', () => {
           assertStartContainer(editor, CaretContainer.isCaretContainerBlock);
           TinyAssertions.assertCursor(editor, [ 3 ], 0);
         });
+      });
+    });
+  });
+
+  context('Select to endpoint (OSX)', () => {
+    before(function () {
+      if (!platform.os.isOSX()) {
+        this.skip();
+      }
+    });
+
+    const keystroke = (editor: Editor, key: number) => TinyContentActions.keystroke(editor, key, { shiftKey: true, metaKey: true });
+
+    context('Up', () => {
+      it('TINY-7460: make selection to start of the CEF block', () => {
+        const editor = hook.editor();
+        editor.setContent('<p contenteditable="false">CEF</p><p>abc</p>');
+        TinySelections.setCursor(editor, [ 2, 0 ], 2);
+        keystroke(editor, Keys.up());
+        TinyAssertions.assertSelection(editor, [], 0, [ 1, 0 ], 2);
+      });
+    });
+
+    context('Down', () => {
+      it('TINY-7460: make selection to end of the CEF block', () => {
+        const editor = hook.editor();
+        editor.setContent('<p>abc</p><p contenteditable="false">CEF</p>');
+        TinySelections.setCursor(editor, [ 0, 0 ], 1);
+        keystroke(editor, Keys.down());
+        TinyAssertions.assertSelection(editor, [ 0, 0 ], 1, [], 2);
       });
     });
   });

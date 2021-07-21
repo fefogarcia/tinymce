@@ -15,7 +15,6 @@ import CaretPosition from '../caret/CaretPosition';
 import { isAfterContentEditableFalse, isAfterTable, isBeforeContentEditableFalse, isBeforeTable } from '../caret/CaretPositionPredicates';
 import * as CaretUtils from '../caret/CaretUtils';
 import { CaretWalker, HDirection } from '../caret/CaretWalker';
-import * as FakeCaretUtils from '../caret/FakeCaretUtils';
 import * as LineWalker from '../caret/LineWalker';
 import * as NodeType from '../dom/NodeType';
 import * as NavigationUtils from './NavigationUtils';
@@ -106,22 +105,6 @@ const moveToLineEndPoint = (editor: Editor, forward: boolean): boolean => {
   return NavigationUtils.moveToLineEndPoint(editor, forward, isCefPosition);
 };
 
-// Use when doing just Ctrl+Home and Ctrl+End
-// TODO: Create a separate JIra for handling Ctrl+Home and Ctrl+End
-const moveToEndPoint = (editor: Editor, forward: boolean): boolean => {
-  // console.log('moveToEndPoint');
-  const traverse = forward ? Traverse.lastChild : Traverse.firstChild;
-  const childOpt = traverse(SugarElement.fromDom(editor.getBody())).map((child) => child.dom);
-
-  return childOpt.filter(isContentEditableFalse).exists((child) => {
-    const direction = forward ? HDirection.Forwards : HDirection.Backwards;
-    return FakeCaretUtils.showCaret(direction, editor, child, !forward, false).exists((newRange) => {
-      NavigationUtils.moveToRange(editor, newRange);
-      return true;
-    });
-  });
-};
-
 // TODO: <Jira> IE11 does not natively allow a selction when the cursor starts as a fake caret.
 // All other browsers have no problems with this
 const selectToEndPoint = (editor: Editor, forward: boolean): boolean => {
@@ -147,6 +130,5 @@ export {
   moveH,
   moveV,
   moveToLineEndPoint,
-  moveToEndPoint,
   selectToEndPoint
 };

@@ -6,6 +6,7 @@
  */
 
 import { Cell } from '@ephox/katamari';
+import { PlatformDetection } from '@ephox/sand';
 
 import Editor from '../api/Editor';
 import VK from '../api/util/VK';
@@ -15,13 +16,16 @@ import * as MatchKeys from './MatchKeys';
 import * as MediaNavigation from './MediaNavigation';
 
 const executeKeydownOverride = (editor: Editor, caret: Cell<Text>, evt: KeyboardEvent) => {
+  const os = PlatformDetection.detect().os;
+
   MatchKeys.execute([
     { keyCode: VK.END, action: MatchKeys.action(CefNavigation.moveToLineEndPoint, editor, true) },
     { keyCode: VK.HOME, action: MatchKeys.action(CefNavigation.moveToLineEndPoint, editor, false) },
-    { keyCode: VK.END, action: MatchKeys.action(CefNavigation.selectToEndPoint, editor, true), ctrlKey: true, shiftKey: true },
-    { keyCode: VK.HOME, action: MatchKeys.action(CefNavigation.selectToEndPoint, editor, false), ctrlKey: true, shiftKey: true },
-    { keyCode: VK.END, action: MatchKeys.action(CefNavigation.moveToEndPoint, editor, true), ctrlKey: true },
-    { keyCode: VK.HOME, action: MatchKeys.action(CefNavigation.moveToEndPoint, editor, false), ctrlKey: true },
+    // To select from current cursor location to start/end of content
+    // Windows: Ctrl+Shift+Home/End
+    // Mac: Shift+Home/End (covered here) or Shift+Cmd+Up/Down (convered in ArrowKeys.ts)
+    { keyCode: VK.END, action: MatchKeys.action(CefNavigation.selectToEndPoint, editor, true), ctrlKey: !os.isOSX(), shiftKey: true },
+    { keyCode: VK.HOME, action: MatchKeys.action(CefNavigation.selectToEndPoint, editor, false), ctrlKey: !os.isOSX(), shiftKey: true },
     { keyCode: VK.END, action: MatchKeys.action(MediaNavigation.moveToLineEndPoint, editor, true) },
     { keyCode: VK.HOME, action: MatchKeys.action(MediaNavigation.moveToLineEndPoint, editor, false) },
     { keyCode: VK.END, action: MatchKeys.action(BoundarySelection.moveToLineEndPoint, editor, true, caret) },
