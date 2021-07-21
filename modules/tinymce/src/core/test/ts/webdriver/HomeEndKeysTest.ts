@@ -15,7 +15,7 @@ describe('webdriver.tinymce.core.keyboard.HomeEndKeysTest', () => {
   }, [ Theme ], true);
 
   before(function () {
-    // Skip OSX has it has differnt shortcuts for moving the cursor around in the content
+    // Skip OSX as it has differnt shortcuts for moving the cursor around in the content
     if (platform.os.isOSX()) {
       this.skip();
     }
@@ -170,7 +170,11 @@ describe('webdriver.tinymce.core.keyboard.HomeEndKeysTest', () => {
         TinyAssertions.assertSelection(editor, [ 0, 0 ], 0, [], 2);
       });
 
-      it('TINY-7460: select from start of CEF block to end of content', async () => {
+      // TODO: <Jira> Does not work natively on IE11 but does on all other browsers
+      it('TINY-7460: select from start of CEF block to end of content', async function () {
+        if (platform.browser.isIE()) {
+          this.skip();
+        }
         const editor = hook.editor();
         editor.setContent('<p contenteditable="false">CEF</p><p>abc</p>');
         TinySelections.setCursor(editor, [ 0 ], 0);

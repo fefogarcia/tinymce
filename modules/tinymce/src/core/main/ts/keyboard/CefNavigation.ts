@@ -107,6 +107,7 @@ const moveToLineEndPoint = (editor: Editor, forward: boolean): boolean => {
 };
 
 // Use when doing just Ctrl+Home and Ctrl+End
+// TODO: Create a separate JIra for handling Ctrl+Home and Ctrl+End
 const moveToEndPoint = (editor: Editor, forward: boolean): boolean => {
   // console.log('moveToEndPoint');
   const traverse = forward ? Traverse.lastChild : Traverse.firstChild;
@@ -137,7 +138,6 @@ const selectToEndPoint = (editor: Editor, forward: boolean): boolean => {
     } else {
       newRng.setStartBefore(child);
     }
-    // TODO: May need to improve moveToRange to scollToEnd if necessary
     NavigationUtils.moveToRange(editor, newRng);
     return true;
   });
